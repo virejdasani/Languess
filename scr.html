@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="codeSnippet">
+  </div>
+
+  <button onclick="showEmbed()">Show embed</button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/postscribe/2.0.8/postscribe.min.js"></script>
+
+  <script>
+    function getRandomInt(max) {
+      return Math.floor(Math.random() * Math.floor(max));
+    }
+
+    const randomLanguages = ["Swift", "JavaScript", "Java",
+      "Kotlin", "Shell", "PowerShell", "C++", "C", "C#",
+      "Ruby",
+      "Dart", "Python", "Objective-C", "Perl", "Go",
+      "PHP", "R", "Dockerfile", "CSS", "HTML",
+      "TypeScript", "Haskell",
+      "GLSL"
+    ]
+
+    var baseUrl =
+      `https://api.github.com/gists/public?page= + ${getRandomInt(100)}`;
+
+    var gistsArr = [];
+
+    fetch(baseUrl)
+      .then(response => response.json())
+      .then(data => {
+
+        for (var i = 0; i < data.length; i++) {
+          var gistObj = {}
+
+          gistObj["embedUrl"] = data[i].html_url + ".js"
+          gistObj["lang"] = data[i]["files"][Object.keys(
+            data[i]["files"])[0]].language
+
+          if (isValidLanguage(gistObj["lang"])) {
+            console.log(gistObj["lang"]);
+            gistsArr.push(gistObj)
+          }
+        }
+        showEmbed()
+
+      })
+
+
+
+    //   console.log(embedUrl)
+
+    //   addScript(embedUrl)
+    // }
+
+    function showEmbed() {
+
+      let embedUrl = gistsArr[0].embedUrl
+
+      postscribe('#codeSnippet', "<script class='gist-code' src='" + embedUrl + "'><\/script>");
+
+      gistsArr.shift()
+
+    }
+
+    function isValidLanguage(language) {
+      switch (language) {
+        case null:
+        case "Markdown":
+        case "JSON":
+        case "Text":
+        case "Ignore List":
+        case "XML":
+        case "Jupyter Notebook":
+        case "CSV":
+        case "Maven POM":
+        case "YAML":
+        case "AutoHotkey":
+        case "TSV":
+        case "reStructuredText":
+        case "VCL":
+        case "Diff":
+        case "TeX":
+        case "TOML":
+        case "Windows Registry Entries":
+        case "SVG":
+        case "Ballerina":
+        case "Org":
+
+          return false
+        default:
+          return true
+      }
+    }
+  </script>
+</body>
+
+</html>
